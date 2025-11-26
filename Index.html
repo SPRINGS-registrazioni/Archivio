@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Springs – Meeting Platform</title>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #dfe9f3;
+        }
+
+        .topbar {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            background: linear-gradient(90deg, #0077cc, #00a6e0);
+            color: white;
+        }
+
+        .logo {
+            width: 40px;
+            margin-right: 10px;
+        }
+
+        .container {
+            display: flex;
+        }
+
+        .left-menu {
+            width: 200px;
+            background: #f7f7f7;
+            border-right: 2px solid #ddd;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .menu-btn {
+            padding: 12px;
+            border: none;
+            background: #e5e5e5;
+            border-radius: 6px;
+            font-size: 15px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .menu-btn:hover {
+            background: #d1d1d1;
+        }
+
+        .main-screen {
+            flex: 1;
+            padding: 30px;
+        }
+
+        .start-btn, .join-btn {
+            padding: 12px 16px;
+            margin-right: 10px;
+            margin-top: 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 15px;
+        }
+
+        .start-btn {
+            background: #0077cc;
+            color: white;
+        }
+
+        .join-btn {
+            background: #eee;
+        }
+
+        .footer {
+            padding: 12px;
+            background: #fafafa;
+            border-top: 2px solid #ddd;
+            text-align: center;
+            font-size: 15px;
+        }
+
+        #registrazioni {
+            color: #0066aa;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        #registrazioni:hover {
+            text-decoration: underline;
+        }
+
+        /* POPUP */
+        .hidden {
+            display: none;
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.55);
+            backdrop-filter: blur(3px);
+            z-index: 8;
+        }
+
+        .popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 350px;
+            max-width: 90%;
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 5px 25px rgba(0,0,0,0.3);
+            z-index: 9;
+        }
+
+        .popup input {
+            width: 100%;
+            padding: 10px;
+            margin: 12px 0;
+            border: 1px solid #bbb;
+            border-radius: 6px;
+        }
+
+        .popup-logo {
+            display: block;
+            width: 160px;
+            margin: 0 auto 15px auto;
+        }
+
+        .popup-btn {
+            width: 100%;
+            padding: 10px;
+            background: #0077cc;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-bottom: 10px;
+        }
+
+        .close-btn {
+            width: 100%;
+            padding: 10px;
+            background: #ccc;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        /* MOBILE FRIENDLY */
+        @media (max-width: 700px) {
+            .container {
+                flex-direction: column;
+            }
+
+            .left-menu {
+                width: 100%;
+                flex-direction: row;
+                overflow-x: auto;
+                gap: 10px;
+                padding: 10px;
+            }
+
+            .menu-btn {
+                flex: 1;
+                white-space: nowrap;
+            }
+
+            .main-screen {
+                padding: 20px;
+            }
+
+            .topbar h1 {
+                font-size: 20px;
+            }
+        }
+    </style>
+
+</head>
+<body>
+
+    <header class="topbar">
+        <img src="logo.PNG" alt="Springs Logo" class="logo">
+        <h1>Springs</h1>
+    </header>
+
+    <main class="container">
+        <section class="left-menu">
+  
+            <button class="menu-btn">Polimi</button>
+            <button class="menu-btn">UniMi</button>
+            <button class="menu-btn">Accedi</button>
+        </section>
+
+        <section class="main-screen">
+            <h2>Pannello principale</h2>
+            <p>Benvenuto su Springs, la nuova piattaforma professionale per conferenze, meeting e collaborazione digitale.</p>
+        
+            <button class="start-btn">Avvia una riunione</button>
+            <button class="join-btn">Partecipa con codice</button>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <span id="registrazioni">Archivio registrazioni</span>
+    </footer>
+
+    <!-- Overlay -->
+    <div id="overlay" class="overlay hidden"></div>
+
+    <!-- Popup SPID -->
+    <div id="popup" class="popup hidden">
+        <img src="poste.svg" class="popup-logo" alt="Poste Italiane">
+        <h2>Accesso richiesto</h2>
+        <p>Per accedere all’archivio delle registrazioni, inserire le credenziali SPID e convalidare dall'app Poste ID.</p>
+
+        <label for="spid">ID SPID</label>
+        <input type="text" id="spid" placeholder="Inserisci il tuo SPID">
+
+        <span id="errorMsg" style="color:red; font-size:14px; display:none;">
+    SPID non valido. Riprova.
+</span>
+        <button class="popup-btn">Continua</button>
+        <button class="close-btn" id="closePopup">Chiudi</button>
+    </div>
+
+    <script>
+
+    const popup = document.getElementById("popup");
+    const overlay = document.getElementById("overlay");
+    const closePopup = document.getElementById("closePopup");
+    const continueBtn = document.querySelector(".popup-btn");
+    const errorMsg = document.getElementById("errorMsg");
+    const spidInput = document.getElementById("spid");
+
+    // Apri popup cliccando QUALSIASI COSA
+    document.addEventListener("click", function (event) {
+        if (popup.contains(event.target)) return;
+
+        popup.classList.remove("hidden");
+        overlay.classList.remove("hidden");
+    });
+
+    // Chiudi popup
+    closePopup.addEventListener("click", () => {
+        popup.classList.add("hidden");
+        overlay.classList.add("hidden");
+        errorMsg.style.display = "none";
+        spidInput.value = "";
+    });
+
+    // VALIDAZIONE FALSA: qualunque codice genera errore
+    continueBtn.addEventListener("click", () => {
+        errorMsg.style.display = "block";
+        spidInput.style.borderColor = "red";
+    });
+
+    </script>
+
+</body>
+</html>
+
+
+
+
+
+
+
